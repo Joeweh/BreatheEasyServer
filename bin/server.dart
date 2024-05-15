@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dotenv/dotenv.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 void main(List<String> args) async {
-  await dotenv.load(fileName: '.env');
+  DotEnv(includePlatformEnvironment: true).load();
 
   final app = Router();
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
