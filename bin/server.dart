@@ -1,17 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dotenv/dotenv.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
-import 'config.dart';
 import 'utils/places.dart';
 
 void main(List<String> args) async {
-  Env.vars = DotEnv(includePlatformEnvironment: false)..load();
-
   final app = Router();
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final handler = Pipeline()
@@ -28,7 +24,10 @@ void main(List<String> args) async {
     final query = data['query'];
     final location = data['location'];
 
-    var coordinates = LatLong(latitude: location['lat'], longitude: location['long']);
+    final lat = location['lat'];
+    final long = location['long'];
+
+    var coordinates = LatLong(latitude: lat, longitude: long);
 
     var response = await Places.getAutocomplete(query, coordinates);
 
