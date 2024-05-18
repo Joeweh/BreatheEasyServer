@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
-import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_router/shelf_router.dart' hide Route;
 
 import 'utils/places.dart';
+import 'utils/routes.dart';
 
 void main(List<String> args) async {
   final app = Router();
@@ -22,8 +23,8 @@ void main(List<String> args) async {
     final data = jsonDecode(await request.readAsString());
 
     final query = data['query'];
-    final location = data['location'];
 
+    final location = data['location'];
     final lat = location['lat'];
     final long = location['long'];
 
@@ -33,14 +34,12 @@ void main(List<String> args) async {
 
     var body = jsonDecode(response.body);
 
-    var suggestions = body['suggestions'];
+    var places = body['places'];
 
-    var places = <PlacePrediction>[];
+    var searchResults = <PlacePrediction>[];
 
-    for (var placePredictionMap in suggestions) {
-      var placePrediction = PlacePrediction.fromJson(placePredictionMap);
-
-      places.add(placePrediction);
+    for (var place in places) {
+      searchResults.add(PlacePrediction.fromJson(place));
     }
 
     return Response(HttpStatus.ok, body: jsonEncode(places));

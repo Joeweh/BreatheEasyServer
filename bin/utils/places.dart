@@ -7,15 +7,16 @@ class Places {
   static final mapsKey = Platform.environment['MAPS_API_KEY'];
 
   static Future<http.Response> getAutocomplete(String query, LatLong location) async {
-    var url = Uri.https('places.googleapis.com', '/v1/places:autocomplete');
+    var url = Uri.https('places.googleapis.com', '/v1/places:searchText');
 
     var headers = {
       'Content-Type': 'application/json',
-      'X-Goog-Api-Key': '$mapsKey'
+      'X-Goog-Api-Key': '$mapsKey',
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
     };
 
     var body = {
-      'input': query,
+      'textQuery': query,
       'locationBias': {
         'circle': {
           'center': {
@@ -24,7 +25,8 @@ class Places {
           },
           'radius': 1.0
         }
-      }
+      },
+      'pageSize': 5
     };
 
     var response = await http.post(url, headers: headers, body: jsonEncode(body));
@@ -53,20 +55,10 @@ class PlacePrediction {
   PlacePrediction({ required this.id, required this.name, required this.address });
 
   factory PlacePrediction.fromJson(Map<String, dynamic> json) {
-    var innerJson = json['placePrediction'];
-
-    var parsedPlaceId = innerJson['placeId'];
-
-    var a = innerJson['structuredFormat'];
-
-    var parsedName = a['mainText']['text'];
-
-    var parsedAddress = a['secondaryText']['text'];
-
     return PlacePrediction(
-        id: parsedPlaceId,
-        name: parsedName,
-        address: parsedAddress
+        id: json['id'],
+        name: json['displayName']['text'],
+        address: json['formattedAddress']
     );
   }
 
