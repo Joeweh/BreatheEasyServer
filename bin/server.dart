@@ -40,6 +40,10 @@ void main(List<String> args) async {
 
     var places = body['places'];
 
+    if (places == null) {
+      return Response(HttpStatus.ok, body: jsonEncode([]));
+    }
+
     var searchResults = <PlacePrediction>[];
 
     for (var place in places) {
