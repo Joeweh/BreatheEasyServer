@@ -25,8 +25,10 @@ void main(List<String> args) async {
     final query = data['query'];
 
     final location = data['location'];
-    final lat = location['lat'];
-    final long = location['long'];
+
+    // Cast possible integers to double
+    final lat = location['lat'] + 0.0;
+    final long = location['long'] + 0.0;
 
     var coordinates = LatLong(latitude: lat, longitude: long);
 
