@@ -42,7 +42,28 @@ void main(List<String> args) async {
       searchResults.add(PlacePrediction.fromJson(place));
     }
 
-    return Response(HttpStatus.ok, body: jsonEncode(places));
+    return Response(HttpStatus.ok, body: jsonEncode(searchResults));
+  });
+
+  app.post('/api/routes', (Request request) async {
+    final data = jsonDecode(await request.readAsString());
+
+    final originAddress = data['origin'];
+    final destinationAddress = data['dest'];
+
+    var response = await Routes.getRoutes(originAddress, destinationAddress);
+
+    var body = jsonDecode(response.body);
+
+    var routes = body['routes'];
+
+    var routeResults = <Route>[];
+
+    for (var route in routes) {
+      routeResults.add(Route.fromJson(route));
+    }
+
+    return Response(HttpStatus.ok, body: jsonEncode(routeResults));
   });
 
   final server = await serve(handler, '0.0.0.0', port);
