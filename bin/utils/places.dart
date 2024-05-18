@@ -15,6 +15,7 @@ class Places {
       'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
     };
 
+
     var body = {
       'textQuery': query,
       'locationBias': {
@@ -23,7 +24,7 @@ class Places {
             'latitude': location.latitude,
             'longitude': location.longitude
           },
-          'radius': 1.0
+          'radius': 500.0
         }
       },
       'pageSize': 5
