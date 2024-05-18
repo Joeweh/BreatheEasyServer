@@ -15,7 +15,6 @@ class Places {
       'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
     };
 
-
     var body = {
       'textQuery': query,
       'locationBias': {
