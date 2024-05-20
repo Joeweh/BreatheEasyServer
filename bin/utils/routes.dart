@@ -12,7 +12,7 @@ class Routes {
     var headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': '$mapsKey',
-      'X-Goog-FieldMask': 'routes.staticDuration,routes.distanceMeters,routes.polyline'
+      'X-Goog-FieldMask': 'routes.staticDuration,routes.distanceMeters,routes.polyline,routes.legs'
     };
 
     var body = {
@@ -40,8 +40,9 @@ class Route {
   late double distanceMiles;
   late double durationMinutes;
   late String polylineId;
+  late List<NavigationInstruction> instructions;
 
-  Route({ required this.distanceMiles, required this.durationMinutes, required this.polylineId });
+  Route({ required this.distanceMiles, required this.durationMinutes, required this.polylineId, required this.instructions });
 
   factory Route.fromJson(Map<String, dynamic> json) {
     var distanceMeters = json['distanceMeters'] as int;
@@ -49,10 +50,25 @@ class Route {
 
     var durationSeconds = double.parse(durationString.substring(0, durationString.length - 1));
 
+    var routeLegs = json['legs'];
+
+    var navInstructions = <NavigationInstruction>[];
+
+    for (var leg in routeLegs) {
+      var legSteps = leg['steps'];
+
+      for (var step in legSteps) {
+        var stepInstructions = step['navigationInstruction'];
+
+        navInstructions.add(NavigationInstruction.fromJson(stepInstructions));
+      }
+    }
+
     return Route(
         distanceMiles: distanceMeters / metersToMiles,
         durationMinutes: durationSeconds / secondsToMinutes,
-        polylineId: json['polyline']['encodedPolyline']
+        polylineId: json['polyline']['encodedPolyline'],
+        instructions: navInstructions
     );
   }
 
@@ -60,5 +76,22 @@ class Route {
     'distanceMiles': distanceMiles,
     'durationMinutes': durationMinutes,
     'polylineId': polylineId,
+    'navInstructions': instructions
+  };
+}
+
+class NavigationInstruction {
+  late String maneuver;
+  late String text;
+
+  NavigationInstruction({ required this.maneuver, required this.text });
+
+  factory NavigationInstruction.fromJson(Map<String, dynamic> json) {
+    return NavigationInstruction(maneuver: json['maneuver'], text: json['instructions']);
+  }
+
+  Map<String, dynamic> toJson() => {
+    'maneuver': maneuver,
+    'text': text
   };
 }
