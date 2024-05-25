@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class Places {
   static final mapsKey = Platform.environment['MAPS_API_KEY'];
 
-  static Future<http.Response> getAutocomplete(String query, LatLong location) async {
+  static Future<http.Response> getAutocomplete(String query, LatLng location) async {
     var url = Uri.https('places.googleapis.com', '/v1/places:searchText');
 
     var headers = {
@@ -36,11 +36,11 @@ class Places {
   }
 }
 
-class LatLong {
+class LatLng {
   late double latitude;
   late double longitude;
 
-  LatLong({ required this.latitude, required this.longitude });
+  LatLng({ required this.latitude, required this.longitude });
 
   Map<String, double> toJson() => {
     'lat': latitude,
