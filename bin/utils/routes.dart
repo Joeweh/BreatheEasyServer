@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import 'places.dart';
+
 class Routes {
   static final mapsKey = Platform.environment['MAPS_API_KEY'];
 
@@ -24,6 +26,7 @@ class Routes {
       },
       'travelMode': 'DRIVE',
       'polylineQuality': 'HIGH_QUALITY',
+      'polylineEncoding': 'GEO_JSON_LINESTRING',
       'computeAlternativeRoutes': true
     };
 
@@ -39,10 +42,10 @@ class Route {
 
   late double distanceMiles;
   late double durationMinutes;
-  late String polylineId;
+  late List<LatLng> polylineCoords;
   late List<NavigationInstruction> instructions;
 
-  Route({ required this.distanceMiles, required this.durationMinutes, required this.polylineId, required this.instructions });
+  Route({ required this.distanceMiles, required this.durationMinutes, required this.polylineCoords, required this.instructions });
 
   factory Route.fromJson(Map<String, dynamic> json) {
     var distanceMeters = json['distanceMeters'] as int;
@@ -64,10 +67,20 @@ class Route {
       }
     }
 
+    var coords = json['polyline']['geoJsonLinestring']['coordinates'];
+
+    var coordList = <LatLng>[];
+
+    for (var coordPair in coords) {
+      var latLong = LatLng(latitude: coordPair[1], longitude: coordPair[0]);
+
+      coordList.add(latLong);
+    }
+
     return Route(
         distanceMiles: distanceMeters / metersToMiles,
         durationMinutes: durationSeconds / secondsToMinutes,
-        polylineId: json['polyline']['encodedPolyline'],
+        polylineCoords: coordList,
         instructions: navInstructions
     );
   }
@@ -75,7 +88,7 @@ class Route {
   Map<String, dynamic> toJson() => {
     'distanceMiles': distanceMiles,
     'durationMinutes': durationMinutes,
-    'polylineId': polylineId,
+    'polylineCoords': polylineCoords,
     'navInstructions': instructions
   };
 }
