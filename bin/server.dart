@@ -32,7 +32,7 @@ void main(List<String> args) async {
     final lat = location['lat'] + 0.0;
     final long = location['long'] + 0.0;
 
-    var coordinates = LatLong(latitude: lat, longitude: long);
+    var coordinates = LatLng(latitude: lat, longitude: long);
 
     var response = await Places.getAutocomplete(query, coordinates);
 
