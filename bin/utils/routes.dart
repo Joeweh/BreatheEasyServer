@@ -24,7 +24,7 @@ class Routes {
       'destination': {
         'address': destinationAddress
       },
-      'travelMode': 'DRIVE',
+      'travelMode': 'WALK',
       'polylineQuality': 'HIGH_QUALITY',
       'polylineEncoding': 'GEO_JSON_LINESTRING',
       'computeAlternativeRoutes': true
