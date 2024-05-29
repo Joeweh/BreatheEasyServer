@@ -8,7 +8,7 @@ import 'places.dart';
 class Routes {
   static final mapsKey = Platform.environment['MAPS_API_KEY'];
 
-  static Future<http.Response> getRoutes(String originAddress, String destinationAddress) async {
+  static Future<http.Response> getRoutes(String originAddress, String destinationAddress, bool avoidOutliers) async {
     var url = Uri.https('routes.googleapis.com', '/directions/v2:computeRoutes');
 
     var headers = {
@@ -40,12 +40,13 @@ class Route {
   static const metersToMiles = 1609.34;
   static const secondsToMinutes = 60.0;
 
+  late double airScore;
   late double distanceMiles;
   late double durationMinutes;
   late List<LatLng> polylineCoords;
   late List<NavigationInstruction> instructions;
 
-  Route({ required this.distanceMiles, required this.durationMinutes, required this.polylineCoords, required this.instructions });
+  Route({ required this.airScore, required this.distanceMiles, required this.durationMinutes, required this.polylineCoords, required this.instructions });
 
   factory Route.fromJson(Map<String, dynamic> json) {
     var distanceMeters = json['distanceMeters'] as int;
@@ -78,6 +79,7 @@ class Route {
     }
 
     return Route(
+        airScore: 0,
         distanceMiles: distanceMeters / metersToMiles,
         durationMinutes: durationSeconds / secondsToMinutes,
         polylineCoords: coordList,
