@@ -59,7 +59,9 @@ void main(List<String> args) async {
     final originAddress = data['origin'];
     final destinationAddress = data['dest'];
 
-    var response = await Routes.getRoutes(originAddress, destinationAddress);
+    final avoidOutliers = data['avoidOutliers'];
+
+    var response = await Routes.getRoutes(originAddress, destinationAddress, avoidOutliers);
 
     var body = jsonDecode(response.body);
 
