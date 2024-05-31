@@ -65,7 +65,7 @@ class PlacePrediction {
         location: LatLng.fromJson(json['location'])
     );
   }
-
+  
   Map<String, dynamic> toJson() => {
     'name': name,
     'address': address,

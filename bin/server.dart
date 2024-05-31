@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
+import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:shelf_router/shelf_router.dart' hide Route;
 
 import 'utils/places.dart';
@@ -13,6 +14,7 @@ void main(List<String> args) async {
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final handler = Pipeline()
       .addMiddleware(logRequests())
+      .addMiddleware(corsHeaders())
       .addHandler(app.call);
 
   app.get('/api', (Request request) {
@@ -66,7 +68,7 @@ void main(List<String> args) async {
     var routeResults = <Route>[];
 
     for (var route in routes) {
-      routeResults.add(Route.fromJson(route));
+      routeResults.add(await Route.fromJson(route));
     }
 
     return Response(HttpStatus.ok, body: jsonEncode(routeResults));
