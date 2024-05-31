@@ -12,7 +12,7 @@ class Places {
     var headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': '$mapsKey',
-      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location'
     };
 
     var body = {
@@ -54,18 +54,21 @@ class LatLng {
 class PlacePrediction {
   late String name;
   late String address;
+  late LatLng location;
 
-  PlacePrediction({ required this.name, required this.address });
+  PlacePrediction({ required this.name, required this.address, required this.location });
 
   factory PlacePrediction.fromJson(Map<String, dynamic> json) {
     return PlacePrediction(
         name: json['displayName']['text'],
-        address: json['formattedAddress']
+        address: json['formattedAddress'],
+        location: LatLng.fromJson(json['location'])
     );
   }
-
-  Map<String, String> toJson() => {
+  
+  Map<String, dynamic> toJson() => {
     'name': name,
     'address': address,
+    'location': location
   };
 }
