@@ -59,9 +59,7 @@ void main(List<String> args) async {
     final originAddress = data['origin'];
     final destinationAddress = data['dest'];
 
-    final avoidOutliers = data['avoidOutliers'];
-
-    var response = await Routes.getRoutes(originAddress, destinationAddress, avoidOutliers);
+    var response = await Routes.getRoutes(originAddress, destinationAddress);
 
     var body = jsonDecode(response.body);
 
@@ -70,7 +68,7 @@ void main(List<String> args) async {
     var routeResults = <Route>[];
 
     for (var route in routes) {
-      routeResults.add(Route.fromJson(route));
+      routeResults.add(await Route.fromJson(route));
     }
 
     return Response(HttpStatus.ok, body: jsonEncode(routeResults));
