@@ -41,6 +41,10 @@ class LatLng {
 
   LatLng({ required this.latitude, required this.longitude });
 
+  factory LatLng.fromJson(Map<String, dynamic> json) {
+    return LatLng(latitude: json['latitude'], longitude: json['longitude']);
+  }
+
   Map<String, double> toJson() => {
     'lat': latitude,
     'long': longitude
@@ -48,22 +52,19 @@ class LatLng {
 }
 
 class PlacePrediction {
-  late String id;
   late String name;
   late String address;
 
-  PlacePrediction({ required this.id, required this.name, required this.address });
+  PlacePrediction({ required this.name, required this.address });
 
   factory PlacePrediction.fromJson(Map<String, dynamic> json) {
     return PlacePrediction(
-        id: json['id'],
         name: json['displayName']['text'],
         address: json['formattedAddress']
     );
   }
 
   Map<String, String> toJson() => {
-    'id': id,
     'name': name,
     'address': address,
   };

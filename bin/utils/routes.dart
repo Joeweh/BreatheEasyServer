@@ -3,12 +3,13 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import 'air_quality.dart';
 import 'places.dart';
 
 class Routes {
   static final mapsKey = Platform.environment['MAPS_API_KEY'];
 
-  static Future<http.Response> getRoutes(String originAddress, String destinationAddress, bool avoidOutliers) async {
+  static Future<http.Response> getRoutes(String originAddress, String destinationAddress) async {
     var url = Uri.https('routes.googleapis.com', '/directions/v2:computeRoutes');
 
     var headers = {
@@ -48,23 +49,36 @@ class Route {
 
   Route({ required this.airScore, required this.distanceMiles, required this.durationMinutes, required this.polylineCoords, required this.instructions });
 
-  factory Route.fromJson(Map<String, dynamic> json) {
+  static Future<Route> fromJson(Map<String, dynamic> json) async {
     var distanceMeters = json['distanceMeters'] as int;
     var durationString = json['staticDuration'] as String;
 
     var durationSeconds = double.parse(durationString.substring(0, durationString.length - 1));
 
-    var routeLegs = json['legs'];
+    var leg = json['legs'][0];
 
     var navInstructions = <NavigationInstruction>[];
 
-    for (var leg in routeLegs) {
-      var legSteps = leg['steps'];
+    var steps = leg['steps'];
 
-      for (var step in legSteps) {
-        var stepInstructions = step['navigationInstruction'];
+    var stepsCoords = <LatLng>[];
 
+    var counter = 0;
+
+    for (var step in steps) {
+      Map<String, dynamic>? stepInstructions = step['navigationInstruction'];
+
+      if (stepInstructions != null) {
         navInstructions.add(NavigationInstruction.fromJson(stepInstructions));
+      }
+
+      LatLng startPoint = LatLng.fromJson(step['startLocation']['latLng']);
+      LatLng endPoint = LatLng.fromJson(step['endLocation']['latLng']);
+
+      stepsCoords.add(startPoint);
+
+      if (counter == steps.length - 1) {
+        stepsCoords.add(endPoint);
       }
     }
 
@@ -78,8 +92,10 @@ class Route {
       coordList.add(latLong);
     }
 
+    var score = await AirQuality.calculateAirQualityScore(stepsCoords);
+
     return Route(
-        airScore: 0,
+        airScore: score,
         distanceMiles: distanceMeters / metersToMiles,
         durationMinutes: durationSeconds / secondsToMinutes,
         polylineCoords: coordList,
@@ -88,10 +104,11 @@ class Route {
   }
 
   Map<String, dynamic> toJson() => {
+    'airScore': airScore,
     'distanceMiles': distanceMiles,
     'durationMinutes': durationMinutes,
-    'polylineCoords': polylineCoords,
-    'navInstructions': instructions
+    'navInstructions': instructions,
+    'polylineCoords': polylineCoords
   };
 }
 
