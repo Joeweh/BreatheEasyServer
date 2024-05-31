@@ -27,7 +27,8 @@ class Routes {
       'travelMode': 'WALK',
       'polylineQuality': 'HIGH_QUALITY',
       'polylineEncoding': 'GEO_JSON_LINESTRING',
-      'computeAlternativeRoutes': true
+      'computeAlternativeRoutes': true,
+      'languageCode': 'en-US'
     };
 
     var response = await http.post(url, headers: headers, body: jsonEncode(body));
