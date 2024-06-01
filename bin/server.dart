@@ -67,13 +67,19 @@ void main(List<String> args) async {
 
     var body = jsonDecode(response.body);
 
+    print('body: $body');
+
     var routes = body['routes'];
 
     var routeResults = <Route>[];
 
+    print('results: $routeResults');
+
     for (var route in routes) {
       routeResults.add(await Route.fromJson(route));
     }
+
+    print('routes: $routes');
 
     return Response(HttpStatus.ok, body: jsonEncode(routeResults));
   });
